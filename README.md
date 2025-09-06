@@ -60,13 +60,14 @@ is quite handy in testing.
 
 ## TODO
 
-[x] SSE support
-[ ] WebSocket support
-[ ] HTTP/2
-[ ] HTTPS
-[ ] API docs
-[ ] Perf tests
-[ ] grpc
+* [x] Initial server implementation
+* [x] SSE support
+* [ ] WebSocket support
+* [ ] HTTP/2
+* [ ] HTTPS
+* [ ] API docs
+* [ ] Perf tests
+* [ ] grpc
 
 ## License
 
