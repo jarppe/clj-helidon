@@ -14,7 +14,7 @@
     [tag sha]))
 
 
-(defn new-release [version message]
+(defn new-release [[version message]]
   (when (str/blank? version)
     (println "version is required")
     (System/exit 1))

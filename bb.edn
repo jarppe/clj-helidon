@@ -24,7 +24,7 @@
 
          release:new     {:doc      "Make new release"
                           :requires ([release])
-                          :task     (let [[tag sha] (apply release/new-release *command-line-args*)]
+                          :task     (let [[tag sha] (release/new-release *command-line-args*)]
                                       (println (format ":git/tag \"%s\"" tag))
                                       (println (format ":git/sha \"%s\"" sha)))}
 

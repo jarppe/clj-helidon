@@ -27,7 +27,7 @@ Start the server:
 
 ```clj
 (ns my-app
-  (:require [jarppe.clj-helidon.server :as helidon]))
+  (:require [jarppe.clj-helidon :as helidon]))
 
 (defn handler [req]
   {:status 200
