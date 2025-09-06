@@ -1,0 +1,12 @@
+*
+!/bb
+!/bb/**
+!/src
+!/src/**
+!/.cljfmt.edn
+!/.gitignore
+!/bb.edn
+!/deps.edn
+!/LICENSE
+!/README.md
+!/tests.edn

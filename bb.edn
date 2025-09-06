@@ -1,0 +1,37 @@
+{:paths ["bb"]
+ :deps  {}
+ :tasks {dev:outdated {:doc  "Check for outdated Clojure deps"
+                       :task (clojure "-Sdeps" "{:deps {olical/depot {:mvn/version \"RELEASE\"}}}"
+                                      "-M" "-m" "depot.outdated.main"
+                                      "--aliases" "dev,test")}
+         
+         dev:sources  {:doc  "Download dependency sources"
+                       :requires ([babashka.process :as p])
+                       :task (do (p/shell "clj -X:deps mvn-pom :aliases" "[:dev :test]")
+                                 (p/shell "mvn dependency:sources dependency:resolve -Dclassifier=javadoc")
+                                 (p/shell "rm pom.xml"))}
+         
+         test:unit       {:doc  "Run unit tests"
+                          :task (->> (cons "-M:test -m kaocha.runner --reporter kaocha.report/dots" *command-line-args*)
+                                     (clojure.string/join " ")
+                                     (clojure))}
+
+         release:current {:doc      "Print current release info"
+                          :requires ([release])
+                          :task     (let [[tag sha] (release/current)]
+                                      (println (format "io.github.jarppe/clj-helidon {:git/tag \"%s\"" tag))
+                                      (println (format "                              :git/sha \"%s\"}" sha)))}
+
+         release:new     {:doc      "Make new release"
+                          :requires ([release])
+                          :task     (let [[tag sha] (apply release/new-release *command-line-args*)]
+                                      (println (format ":git/tag \"%s\"" tag))
+                                      (println (format ":git/sha \"%s\"" sha)))}
+
+         mvn:pom         {:doc      "Make maven pom.xml"
+                          :requires ([babashka.fs :as fs]
+                                     [release])
+                          :task     (let [[tag] (release/current)]
+                                      (fs/delete-if-exists "pom.xml")
+                                      (fs/delete-if-exists "pom.properties")
+                                      (clojure "-T:build make-pom :version" (pr-str tag)))}}}
