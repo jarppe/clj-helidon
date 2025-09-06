@@ -19,8 +19,8 @@ Alpha release, subject to changes and no guarantees of updates.
 Add clj-helidon as a dependency to your `deps.edn`:
 
 ```
-io.github.jarppe/clj-helidon {:git/tag "0.0.1"
-                              :git/sha "e30f755"}
+io.github.jarppe/clj-helidon {:git/tag "0.0.2"
+                              :git/sha "8d00376"}
 ```
 
 Start the server:
