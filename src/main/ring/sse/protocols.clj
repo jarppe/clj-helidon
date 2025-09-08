@@ -4,10 +4,10 @@
 (defprotocol SSEListener
   "A protocol for handling SSE responses. The second argument is an object that 
    satisfies the SSEEmitter protocol."
-  (on-open [listener sso-emitter] "Called when the SSO is opened."))
+  (on-open [listener sso-sender] "Called when the SSO is opened."))
 
 
-(defprotocol SSEEmitter
+(defprotocol SSESender
   "A protocol for sending SSE responses."
-  (-send [emitter message] "Sends a SSO message")
-  (-close [emitter] "Closes the SSO response"))
+  (-send [sender message] "Sends a SSO message")
+  (-close [sender] "Closes the SSO response"))

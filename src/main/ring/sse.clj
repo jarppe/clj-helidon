@@ -6,23 +6,27 @@
 
 (extend-type clojure.lang.IPersistentMap
   p/SSEListener
-  (on-open [m emitter]
-    (when-let [kv (find m :on-open)] ((val kv) emitter))))
+  (on-open [m sender]
+    (when-let [kv (find m :on-open)] ((val kv) sender))))
 
 
 (defn send
   "Sends a SSE message"
-  [emitter sso-message]
-  (p/-send emitter sso-message))
+  [sender sso-message]
+  (p/-send sender sso-message))
 
 
 (defn close
   "Closes SSE response."
-  ([emitter]
-   (p/-close emitter)))
+  ([sender]
+   (p/-close sender)))
 
 
 (defn sse-response?
   "Returns true if the response contains a SSE emitter."
   [response]
   (contains? response ::listener))
+
+
+(defn sse-request? [req]
+  (-> req :headers (get "accept") (= "text/event-stream")))

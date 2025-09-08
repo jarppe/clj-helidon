@@ -21,8 +21,8 @@
     (SseEvent/create data-or-opts)))
 
 
-(defrecord HelidonSSEEmitter [^SseSink sse-sink]
-  p/SSEEmitter
+(defrecord HelidonSSESender [^SseSink sse-sink]
+  p/SSESender
   (-send [_ message] (.emit sse-sink (sse-event message)))
   (-close [_] (.close sse-sink))
   
@@ -32,5 +32,6 @@
 
 (defn handle-sse-resp [ring-resp ^ServerResponse server-resp]
   (let [on-open  (-> ring-resp :ring.sse/listener :on-open)
-        sse-sink (.sink server-resp SseSink/TYPE)]
-    (on-open (HelidonSSEEmitter. sse-sink))))
+        sse-sink (.sink server-resp SseSink/TYPE)
+        sender   (HelidonSSESender. sse-sink)]
+    (on-open sender)))
