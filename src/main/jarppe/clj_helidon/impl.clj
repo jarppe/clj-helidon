@@ -332,19 +332,20 @@
 ;;
 
 
-(defn send-server-resp [ring-resp ^ServerResponse server-resp]
-  (.status server-resp (-> ring-resp :status (or 200) (helidon-status)))
-  (doseq [ring-header (-> ring-resp :headers)]
-    (.header server-resp (helidon-header (key ring-header)
-                                         (str (val ring-header)))))
-  (write-body (-> ring-resp :body) server-resp))
+(defn send-server-resp [{:helidon/keys [response]} {:keys [status headers body]}]
+  (ServerResponse/.status response (helidon-status (or status 200)))
+  (doseq [ring-header headers
+          :let        [header (helidon-header (key ring-header)
+                                              (str (val ring-header)))]]
+    (ServerResponse/.header response header))
+  (write-body body response))
 
 
-(defn send-ring-resp [ring-resp ring-req ^ServerResponse server-resp]
+(defn send-ring-resp [ring-req ring-resp]
   (cond
-    (and (ring.sse/sse-request? ring-req) (ring.sse/sse-response? ring-resp)) (sse/handle-sse-resp ring-resp ^ServerResponse server-resp)
+    (and (ring.sse/sse-request? ring-req) (ring.sse/sse-response? ring-resp)) (sse/handle-sse-resp ring-req ring-resp)
     ;; TODO: Can we support WebSockets in here with Helidon?
-    :else (send-server-resp ring-resp server-resp)))
+    :else (send-server-resp ring-req ring-resp)))
 
 
 ;;
@@ -356,10 +357,10 @@
 
 (defn- ring-handler->helidon-handler ^Handler [handler]
   (reify Handler
-    (handle [_ req resp]
-      (-> (helidon-req->ring-req req resp)
-          (handler)
-          (send-ring-resp req resp)))))
+    (handle [_ helidon-req helidon-resp]
+            (let [ring-req  (helidon-req->ring-req helidon-req helidon-resp)
+                  ring-resp (handler ring-req)]
+              (send-ring-resp ring-req ring-resp)))))
 
 
 ;;

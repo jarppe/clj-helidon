@@ -1,20 +1,23 @@
 {:paths ["bb"]
  :deps  {}
- :tasks {dev:outdated {:doc  "Check for outdated Clojure deps"
-                       :task (clojure "-Sdeps" "{:deps {olical/depot {:mvn/version \"RELEASE\"}}}"
-                                      "-M" "-m" "depot.outdated.main"
-                                      "--aliases" "dev,test")}
-         
-         dev:sources  {:doc  "Download dependency sources"
-                       :requires ([babashka.process :as p])
-                       :task (do (p/shell "clj -X:deps mvn-pom :aliases" "[:dev :test]")
-                                 (p/shell "mvn dependency:sources dependency:resolve -Dclassifier=javadoc")
-                                 (p/shell "rm pom.xml"))}
-         
+ :tasks {dev:outdated    {:doc  "Check for outdated Clojure deps"
+                          :task (clojure "-Sdeps" "{:deps {olical/depot {:mvn/version \"RELEASE\"}}}"
+                                         "-M" "-m" "depot.outdated.main"
+                                         "--aliases" "dev,test")}
+
+         dev:sources     {:doc      "Download dependency sources"
+                          :requires ([babashka.process :as p])
+                          :task     (do (p/shell "clj -X:deps mvn-pom :aliases" "[:dev :test]")
+                                        (p/shell "mvn dependency:sources dependency:resolve -Dclassifier=javadoc")
+                                        (p/shell "rm pom.xml"))}
+
          test:unit       {:doc  "Run unit tests"
                           :task (->> (cons "-M:test -m kaocha.runner --reporter kaocha.report/dots" *command-line-args*)
                                      (clojure.string/join " ")
                                      (clojure))}
+
+         test:watch      {:doc  "Run unit tests in watch mode"
+                          :task (clojure "-M:test -m kaocha.runner --reporter kaocha.report/dots --fail-fast --watch")}
 
          release:current {:doc      "Print current release info"
                           :requires ([release])
