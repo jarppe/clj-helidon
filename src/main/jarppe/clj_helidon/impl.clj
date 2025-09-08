@@ -340,10 +340,10 @@
   (write-body (-> ring-resp :body) server-resp))
 
 
-(defn send-ring-resp [ring-resp ^ServerResponse server-resp]
+(defn send-ring-resp [ring-resp ring-req ^ServerResponse server-resp]
   (cond
-    (ring.sse/sse-response? ring-resp) (sse/handle-sse-resp ring-resp ^ServerResponse server-resp)
-    ;; TODO:: WebSocket
+    (and (ring.sse/sse-request? ring-req) (ring.sse/sse-response? ring-resp)) (sse/handle-sse-resp ring-resp ^ServerResponse server-resp)
+    ;; TODO: Can we support WebSockets in here with Helidon?
     :else (send-server-resp ring-resp server-resp)))
 
 
@@ -359,7 +359,7 @@
     (handle [_ req resp]
       (-> (helidon-req->ring-req req resp)
           (handler)
-          (send-ring-resp resp)))))
+          (send-ring-resp req resp)))))
 
 
 ;;
