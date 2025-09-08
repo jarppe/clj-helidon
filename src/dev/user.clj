@@ -4,12 +4,6 @@
             [kaocha.repl :as k]))
 
 
-(defonce _ (do (System/setProperty "org.jboss.logging.provider" "slf4j")
-               (System/setProperty "org.jboss.logging.provider" "slf4j")
-               (org.slf4j.bridge.SLF4JBridgeHandler/removeHandlersForRootLogger)
-               (org.slf4j.bridge.SLF4JBridgeHandler/install)))
-
-
 (defn start [] 
   (log/info "user/start: system starting...")
   "System up")
